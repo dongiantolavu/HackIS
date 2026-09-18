@@ -32,38 +32,6 @@ end)
 -- METHOD 2: Hook HealthChanged
 RunService.Heartbeat:Connect(function()
     if Hum then
-        Hum.HealthChanged:Connect(function(hp)
+        Hum.HealthChanged:Connect(function()
             task.defer(function()
-                if Hum then Hum.Health = Hum.MaxHealth end
-            end)
-        end)
-    end
-end)
-
--- METHOD 3: Metatable hook chặn damage
-pcall(function()
-    local mt  = getrawmetatable(game)
-    local old = mt.__newindex
-    setreadonly(mt, false)
-    mt.__newindex = function(t, k, v)
-        if t == Hum and k == "Health" then
-            return old(t, k, Hum.MaxHealth)
-        end
-        return old(t, k, v)
-    end
-    setreadonly(mt, true)
-end)
-
--- METHOD 4: Block died
-LP.CharacterAdded:Connect(function(c)
-    local h = c:WaitForChild("Humanoid")
-    h.Died:Connect(function()
-        task.wait(0.05)
-        h.Health = h.MaxHealth
-        pcall(function()
-            h:ChangeState(Enum.HumanoidStateType.GettingUp)
-        end)
-    end)
-end)
-
-print("✅ GOD MODE ON - jb1en by raalsei :~}")
+                if H
