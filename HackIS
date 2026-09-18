@@ -1,71 +1,37 @@
---[[
-    IRON SOUL DUNGEON - GOD MODE ONLY
-    No Key | jb1en by raalsei plush ok :~}
-]]
-
-local Players    = game:GetService("Players")
-local RunService = game:GetService("RunService")
-local LP         = Players.LocalPlayer
-local Char, Hum
-
-local function getChar()
-    Char = LP.Character or LP.CharacterAdded:Wait()
-    Hum  = Char:WaitForChild("Humanoid")
+local P=game:GetService("Players")
+local R=game:GetService("RunService")
+local LP=P.LocalPlayer
+local H
+local function gC()
+local c=LP.Character or LP.CharacterAdded:Wait()
+H=c:WaitForChild("Humanoid")
 end
-getChar()
-
-LP.CharacterAdded:Connect(function()
-    task.wait(0.3)
-    getChar()
-end)
-
--- METHOD 1: Heartbeat set max HP
-RunService.Heartbeat:Connect(function()
-    if Hum then
-        Hum.Health = Hum.MaxHealth
-        if Hum:GetState() == Enum.HumanoidStateType.Dead then
-            Hum:ChangeState(Enum.HumanoidStateType.GettingUp)
-        end
-    end
-end)
-
--- METHOD 2: HealthChanged hook
-local function hookHealth()
-    if Hum then
-        Hum.HealthChanged:Connect(function()
-            task.defer(function()
-                if Hum then Hum.Health = Hum.MaxHealth end
-            end)
-        end)
-    end
+gC()
+LP.CharacterAdded:Connect(function()task.wait(0.3)gC()end)
+R.Heartbeat:Connect(function()
+if H then
+H.Health=H.MaxHealth
+if H:GetState()==Enum.HumanoidStateType.Dead then
+H:ChangeState(Enum.HumanoidStateType.GettingUp)
 end
-hookHealth()
-LP.CharacterAdded:Connect(function() task.wait(0.3) hookHealth() end)
-
--- METHOD 3: Metatable hook
+end
+end)
 pcall(function()
-    local mt  = getrawmetatable(game)
-    local old = mt.__newindex
-    setreadonly(mt, false)
-    mt.__newindex = function(t, k, v)
-        if t == Hum and k == "Health" then
-            return old(t, k, Hum.MaxHealth)
-        end
-        return old(t, k, v)
-    end
-    setreadonly(mt, true)
+local mt=getrawmetatable(game)
+local old=mt.__newindex
+setreadonly(mt,false)
+mt.__newindex=function(t,k,v)
+if t==H and k=="Health" then return old(t,k,H.MaxHealth) end
+return old(t,k,v)
+end
+setreadonly(mt,true)
 end)
-
--- METHOD 4: Block died
 LP.CharacterAdded:Connect(function(c)
-    local h = c:WaitForChild("Humanoid")
-    h.Died:Connect(function()
-        task.wait(0.05)
-        h.Health = h.MaxHealth
-        pcall(function()
-            h:ChangeState(Enum.HumanoidStateType.GettingUp)
-        end)
-    end)
+local h=c:WaitForChild("Humanoid")
+h.Died:Connect(function()
+task.wait(0.05)
+h.Health=h.MaxHealth
+pcall(function()h:ChangeState(Enum.HumanoidStateType.GettingUp)end)
 end)
-
-print("GOD MODE ON - jb1en by raalsei :~}")
+end)
+print("GOD MODE ON")
