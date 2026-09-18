@@ -1,0 +1,69 @@
+--[[
+    IRON SOUL DUNGEON - GOD MODE ONLY
+    No Key | jb1en by raalsei plush ok :~}
+]]
+
+local Players    = game:GetService("Players")
+local RunService = game:GetService("RunService")
+local LP         = Players.LocalPlayer
+local Char, Hum
+
+local function getChar()
+    Char = LP.Character or LP.CharacterAdded:Wait()
+    Hum  = Char:WaitForChild("Humanoid")
+end
+getChar()
+
+LP.CharacterAdded:Connect(function()
+    task.wait(0.3)
+    getChar()
+end)
+
+-- METHOD 1: Set max HP mỗi frame
+RunService.Heartbeat:Connect(function()
+    if Hum then
+        Hum.Health = Hum.MaxHealth
+        if Hum:GetState() == Enum.HumanoidStateType.Dead then
+            Hum:ChangeState(Enum.HumanoidStateType.GettingUp)
+        end
+    end
+end)
+
+-- METHOD 2: Hook HealthChanged
+RunService.Heartbeat:Connect(function()
+    if Hum then
+        Hum.HealthChanged:Connect(function(hp)
+            task.defer(function()
+                if Hum then Hum.Health = Hum.MaxHealth end
+            end)
+        end)
+    end
+end)
+
+-- METHOD 3: Metatable hook chặn damage
+pcall(function()
+    local mt  = getrawmetatable(game)
+    local old = mt.__newindex
+    setreadonly(mt, false)
+    mt.__newindex = function(t, k, v)
+        if t == Hum and k == "Health" then
+            return old(t, k, Hum.MaxHealth)
+        end
+        return old(t, k, v)
+    end
+    setreadonly(mt, true)
+end)
+
+-- METHOD 4: Block died
+LP.CharacterAdded:Connect(function(c)
+    local h = c:WaitForChild("Humanoid")
+    h.Died:Connect(function()
+        task.wait(0.05)
+        h.Health = h.MaxHealth
+        pcall(function()
+            h:ChangeState(Enum.HumanoidStateType.GettingUp)
+        end)
+    end)
+end)
+
+print("✅ GOD MODE ON - jb1en by raalsei :~}")
